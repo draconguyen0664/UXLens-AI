@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { analyzeInterface } from "@/lib/ai/analyze";
 import { createClient } from "@/lib/supabase/server";
 import { analysisSchema } from "@/lib/validations/analysis";

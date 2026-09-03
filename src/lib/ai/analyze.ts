@@ -1,4 +1,4 @@
-﻿import OpenAI from "openai";
+import OpenAI from "openai";
 import { analysisResultSchema } from "@/lib/validations/analysis";
 
 const score = { type: "integer", minimum: 0, maximum: 100 } as const;
