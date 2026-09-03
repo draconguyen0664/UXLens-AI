@@ -1,0 +1,3 @@
+import { NewAuditForm } from "@/features/audit/components/new-audit-form";
+export const metadata={title:"New Audit"};
+export default function NewAuditPage(){return <div className="mx-auto max-w-6xl"><header className="mb-8"><p className="text-sm font-medium text-primary">New Audit</p><h1 className="mt-1 text-3xl font-bold">Phân tích screenshot mới</h1><p className="mt-2 text-muted-foreground">Tải giao diện và cung cấp bối cảnh để nhận kết quả chính xác hơn.</p></header><NewAuditForm/></div>;}

@@ -1,0 +1,3 @@
+import { BarChart3 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+export default function UsagePage(){return <div className="mx-auto max-w-6xl"><h1 className="text-3xl font-bold">Sử dụng</h1><p className="mb-8 mt-2 text-muted-foreground">Theo dõi quota audit của workspace.</p><Card><CardHeader><CardTitle>Tháng hiện tại</CardTitle></CardHeader><CardContent><BarChart3 className="size-6 text-primary"/><div className="mt-5 flex items-end justify-between"><span className="text-4xl font-bold">3</span><span className="text-sm text-muted-foreground">3 / 3 Free audits</span></div><div className="mt-4 h-2 rounded-full bg-muted"><div className="h-full w-full rounded-full bg-primary"/></div></CardContent></Card></div>;}
