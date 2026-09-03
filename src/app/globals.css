@@ -31,7 +31,10 @@
 .marquee-track:hover { animation-play-state: paused; }
 @keyframes ai-gradient-shift { to { background-position: 240% center; } }
 @keyframes marquee-slide { to { transform: translateX(calc(-50% - 1.5rem)); } }
-@media (prefers-reduced-motion: reduce) {
-  .ai-gradient-text, .marquee-track { animation: none; }
-  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
-}
+.animated-preview { position: relative; overflow: hidden; }
+.animated-preview::after { content: ""; position: absolute; inset-inline: 0; top: -20%; height: 22%; pointer-events: none; background: linear-gradient(180deg, transparent, hsl(var(--primary) / .2), transparent); animation: preview-scan 2.8s linear infinite; }
+.animate-ai-pulse { animation: ai-card-pulse 1.5s ease-in-out infinite alternate; }
+.dashboard-motion-bg { background-image: radial-gradient(circle at 75% 10%, hsl(var(--primary) / .1), transparent 28%); background-size: 130% 130%; animation: dashboard-mesh 5s ease-in-out infinite alternate; }
+@keyframes preview-scan { to { top: 110%; } }
+@keyframes ai-card-pulse { to { box-shadow: 0 0 34px hsl(var(--primary) / .28); border-color: hsl(var(--primary) / .55); } }
+@keyframes dashboard-mesh { to { background-position: 35% 22%; } }

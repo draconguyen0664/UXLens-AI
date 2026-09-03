@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     const result = await analyzeInterface(input.image, input.context);
     const { data: audit, error: auditError } = await supabase.from("audits").insert({ user_id: user.id, project_id: projectId, image_path: imagePath, context: input.context, overall_score: result.overallScore, scores: result.scores, status: "completed" }).select("id").single();
     if (auditError) throw auditError;
-    const { error: issuesError } = await supabase.from("audit_issues").insert(result.issues.map((issue, position) => ({ audit_id: audit.id, user_id: user.id, position, severity: issue.severity, category: issue.category, title: issue.title, problem: issue.problem, why_it_matters: issue.whyItMatters, recommendation: issue.recommendation })));
+    const { error: issuesError } = await supabase.from("audit_issues").insert(result.issues.map((issue, position) => ({ audit_id: audit.id, user_id: user.id, position, severity: issue.severity, category: issue.category, title: issue.title, location: issue.location, problem: issue.problem, why_it_matters: issue.whyItMatters, recommendation: issue.recommendation })));
     if (issuesError) throw issuesError;
     await supabase.rpc("increment_audit_usage", { target_user_id: user.id });
     return NextResponse.json({ auditId: audit.id, imagePath, ...result });
