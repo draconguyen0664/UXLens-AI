@@ -9,11 +9,14 @@ import { multiAnalysisSchema } from "@/lib/validations/analysis";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 const FREE_LIMIT = 3;
+const attempts=new Map<string,{count:number;reset:number}>();
+function rateLimited(id:string){const now=Date.now();const current=attempts.get(id);if(!current||current.reset<now){attempts.set(id,{count:1,reset:now+60_000});return false}current.count+=1;return current.count>5}
 
 export async function POST(request: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Bạn cần đăng nhập để tạo audit" }, { status: 401 });
+  if(rateLimited(user.id))return NextResponse.json({error:"Bạn thao tác quá nhanh. Vui lòng thử lại sau một phút.",code:"RATE_LIMITED"},{status:429});
 
   let paths: string[] = [];
   let auditId: string | undefined;
@@ -87,7 +90,7 @@ export async function POST(request: Request) {
     if (usageError) throw usageError;
 
     const signedUrls = await Promise.all(paths.map((path) => createSignedScreenshotUrl(supabase, user.id, path, 300)));
-    return NextResponse.json({ auditId, imagePath: paths[0], imagePaths: paths, signedUrls, promptVersion: "ux-audit-v1", ...result });
+    return NextResponse.json({ auditId, isFirstAudit:(usage?.audit_count??0)===0, imagePath: paths[0], imagePaths: paths, signedUrls, promptVersion: "ux-audit-v1", ...result });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Đã có lỗi xảy ra";
     if (auditId) {
