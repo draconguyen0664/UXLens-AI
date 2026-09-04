@@ -1,10 +1,5 @@
-import OpenAI from "openai";
-import { analysisResultSchema } from "@/lib/validations/analysis";
-const score = { type: "integer", minimum: 0, maximum: 100 } as const;
-const auditJsonSchema = { name: "ux_audit", strict: true, schema: { type: "object", additionalProperties: false, required: ["overallScore", "scores", "issues"], properties: { overallScore: score, scores: { type: "object", additionalProperties: false, required: ["usability", "accessibility", "hierarchy", "consistency", "uxWriting"], properties: { usability: score, accessibility: score, hierarchy: score, consistency: score, uxWriting: score } }, issues: { type: "array", minItems: 1, maxItems: 20, items: { type: "object", additionalProperties: false, required: ["severity", "category", "title", "location", "problem", "whyItMatters", "recommendation"], properties: { severity: { type: "string", enum: ["critical", "high", "medium", "low"] }, category: { type: "string", enum: ["usability", "accessibility", "hierarchy", "consistency", "uxWriting"] }, title: { type: "string" }, location: { type: "string" }, problem: { type: "string" }, whyItMatters: { type: "string" }, recommendation: { type: "string" } } } } } } } as const;
-export async function analyzeInterface(image: File, context?: string) {
-  if (!process.env.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY chưa được cấu hình");
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY }); const base64 = Buffer.from(await image.arrayBuffer()).toString("base64");
-  const response = await client.chat.completions.create({ model: process.env.OPENAI_VISION_MODEL ?? "gpt-4o-mini", response_format: { type: "json_schema", json_schema: auditJsonSchema }, messages: [{ role: "user", content: [{ type: "text", text: `Act as a senior UX auditor. Audit this interface using usability and accessibility heuristics. Write all text in Vietnamese. Describe the precise visual location of every issue. Be specific and actionable.${context ? ` Product context: ${context}` : ""}` }, { type: "image_url", image_url: { url: `data:${image.type};base64,${base64}`, detail: "high" } }] }] });
-  const content = response.choices[0]?.message.content; if (!content) throw new Error("AI không trả về kết quả"); return analysisResultSchema.parse(JSON.parse(content));
-}
+import { OpenAiVisionProvider } from "@/lib/ai/providers/openai";
+import type { VisionAuditProvider } from "@/lib/ai/provider";
+function getProvider():VisionAuditProvider { const provider=process.env.AI_PROVIDER??"openai"; if(provider!=="openai")throw new Error(`AI provider chưa được hỗ trợ: ${provider}`); const key=process.env.OPENAI_API_KEY; if(!key)throw new Error("OPENAI_API_KEY chưa được cấu hình"); return new OpenAiVisionProvider(key); }
+export async function analyzeInterfaces(images:File[],context?:string){return getProvider().analyze({images,context,timeoutMs:Number(process.env.AI_TIMEOUT_MS??45_000)});}
+export async function analyzeInterface(image:File,context?:string){return analyzeInterfaces([image],context);}

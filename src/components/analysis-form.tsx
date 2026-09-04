@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { analysisSchema, type AnalysisInput, type AnalysisResult } from "@/lib/validations/analysis";
+import { analysisResultSchema, analysisSchema, type AnalysisInput, type AnalysisResult } from "@/lib/validations/analysis";
 import { useAnalysisStore } from "@/store/use-analysis-store";
 
 type AuditResponse = AnalysisResult & { auditId: string; imagePath: string };
@@ -18,11 +18,11 @@ async function analyze(values: AnalysisInput): Promise<AuditResponse> {
   const body = new FormData(); body.append("image", values.image); body.append("context", values.context ?? "");
   const response = await fetch("/api/analyze", { method: "POST", body });
   if (!response.ok) throw new Error((await response.json()).error ?? "Không thể phân tích ảnh");
-  return response.json();
+  return analysisResultSchema.parse(await response.json()) as AuditResponse;
 }
 
-const labels: Record<keyof AnalysisResult["scores"], string> = { usability: "Usability", accessibility: "Accessibility", hierarchy: "Hierarchy", consistency: "Consistency", uxWriting: "UX Writing" };
-const severityStyle = { critical: "text-red-400 border-red-500/30", high: "text-orange-400 border-orange-500/30", medium: "text-amber-400 border-amber-500/30", low: "text-cyan-400 border-cyan-500/30" };
+const labels: Record<keyof AnalysisResult["categoryScores"], string> = { usability: "Usability", accessibility: "Accessibility", visualHierarchy: "Hierarchy", consistency: "Consistency", uxWriting: "UX Writing" };
+const severityStyle = { critical: "text-red-400 border-red-500/30", major: "text-orange-400 border-orange-500/30", minor: "text-amber-400 border-amber-500/30" };
 
 export function AnalysisForm() {
   const { imagePreview, setImagePreview } = useAnalysisStore();
@@ -30,7 +30,7 @@ export function AnalysisForm() {
   const mutation = useMutation({ mutationFn: analyze, onSuccess: () => toast.success("Audit đã được lưu"), onError: (error) => toast.error(error.message) });
   const image = watch("image");
   useEffect(() => { if (!image) return; const url = URL.createObjectURL(image); setImagePreview(url); return () => URL.revokeObjectURL(url); }, [image, setImagePreview]);
-  const chartData = mutation.data ? Object.entries(mutation.data.scores).map(([key, value]) => ({ subject: labels[key as keyof AnalysisResult["scores"]], score: value })) : [];
+  const chartData = mutation.data ? Object.entries(mutation.data.categoryScores).map(([key, value]) => ({ subject: labels[key as keyof AnalysisResult["categoryScores"]], score: value })) : [];
 
   return <div className="grid gap-6 lg:grid-cols-[1.05fr_.95fr]">
     <form onSubmit={handleSubmit((value) => mutation.mutate(value))} className="h-fit rounded-2xl border bg-slate-950/70 p-6 shadow-2xl shadow-cyan-950/20">
