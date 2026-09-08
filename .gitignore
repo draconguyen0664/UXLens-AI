@@ -9,3 +9,7 @@ out/
 .sentryclirc
 coverage/
 *.tsbuildinfo
+
+# Local Netlify folder
+.netlify
+deno.lock
