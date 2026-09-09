@@ -20,7 +20,7 @@ const nav=[
   {href:"/dashboard/billing",label:"Billing",icon:CreditCard},
 ];
 
-export function DashboardShell({children,email,demo}:{children:React.ReactNode;email:string;demo:boolean}){
+export function DashboardShell({children,email}:{children:React.ReactNode;email:string}){
   const pathname=usePathname();
   const[mobileOpen,setMobileOpen]=useState(false);
   const isActive=(href:string)=>href==="/dashboard"?pathname===href:href==="/dashboard/audits"?pathname.startsWith(href)||pathname.startsWith("/dashboard/new"):pathname.startsWith(href);
@@ -29,7 +29,6 @@ export function DashboardShell({children,email,demo}:{children:React.ReactNode;e
       <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-4 px-4 sm:px-6">
         <Button variant="ghost" size="sm" className="-ml-2 lg:hidden" aria-label={mobileOpen?"Đóng điều hướng":"Mở điều hướng"} aria-expanded={mobileOpen} onClick={()=>setMobileOpen(value=>!value)}>{mobileOpen?<X className="size-5"/>:<Menu className="size-5"/>}</Button>
         <Link href="/dashboard" aria-label="UXLens AI dashboard"><BrandLogo compact/></Link>
-        {demo&&<span className="hidden rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-600 xl:inline">DEMO</span>}
         <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex" aria-label="Dashboard navigation">
           {nav.map(({href,label,icon:Icon})=><Link key={href} href={href} aria-current={isActive(href)?"page":undefined} className={cn("group flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",isActive(href)?"bg-primary/10 text-primary":"text-muted-foreground hover:bg-accent hover:text-foreground")}><Icon className="size-4 transition-transform group-hover:scale-110"/>{label}</Link>)}
         </nav>
