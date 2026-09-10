@@ -6,10 +6,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        inter: ["var(--font-inter)"],
-        manrope: ["var(--font-manrope)"],
-        cabin: ["var(--font-cabin)"],
-        instrument: ["var(--font-instrument)"],
+        inter: ["ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        manrope: ["ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        cabin: ["ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+        instrument: ["ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
       },
       colors: {
         background: "hsl(var(--background))",
